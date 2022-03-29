@@ -5,17 +5,17 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.jupiter.api.*;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
-
 import java.time.Duration;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AreThereMoreThanEightResults {
     static String areThereMoreThanEightResults(int resultCount) {
@@ -27,19 +27,19 @@ public class StepDefinitions {
 
     private WebDriver driver;
     private String actualAnswer;
-    private String expectedAnswer;
 
-    @Given("I search for Selenium in Google")
-    public void goToGoogleAndSearchForSelenium() {
-
+    @Before
+    public void setup() {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
         driver.get("https://www.google.de/");
-        String title = driver.getTitle();
 
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+    }
 
-        // Verify
+    @Given("I search for Selenium in Google")
+    public void goToGoogleAndSearchForSelenium() {
+        // Verify we are on Google
         Assertions.assertEquals("Google", driver.getTitle());
 
         // Depending on browser configuration and/or location you could be instructed to
@@ -60,13 +60,18 @@ public class StepDefinitions {
         List<WebElement> foundElementsOnFirstPage = driver.findElements(By.className("g"));
         int numberOfResults = foundElementsOnFirstPage.size();
         actualAnswer = AreThereMoreThanEightResults.areThereMoreThanEightResults(numberOfResults);
-        if (driver != null) {
-            driver.quit();
-        }
+
     }
 
     @Then("I should be told {string}")
     public void iShouldBeTold(String expectedAnswer) {
         assertEquals(expectedAnswer, actualAnswer);
+    }
+
+    @After
+    public void cleanup() {
+        if (driver != null) {
+            driver.quit();
+        }
     }
 }
