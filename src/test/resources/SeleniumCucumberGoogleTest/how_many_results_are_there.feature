@@ -5,3 +5,4 @@ Feature: Are there more than 8 search results for Selenium?
    Given I search for Selenium in Google
    When I ask whether there are more than 8 results
    Then I should be told "yes"
+   Then Execute Accessibility Tests
